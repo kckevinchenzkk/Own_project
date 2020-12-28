@@ -1,0 +1,62 @@
+import turtle
+import copy
+from random import randrange
+
+snake = [[0, 0], [0, 10], [0, 20]]
+aim = [0, 10]
+food = [-10, 0]
+
+
+def square(x, y, size, name):
+    turtle.up()
+    turtle.goto(x, y)
+    turtle.down()
+    turtle.color(name)
+    turtle.begin_fill()
+
+    for count in range(4):
+        turtle.forward(size)
+        turtle.left(90)
+
+    turtle.end_fill()
+
+
+def change_direction(x, y):
+    aim[0] = x
+    aim[1] = y
+
+
+def snake_move():
+    head = copy.deepcopy(snake[-1])  # 深度拷贝一份头部的方块
+    head = [head[0] + aim[0], head[1] + aim[1]]  # 头部的方块，朝一方向移动
+    if head in snake or not inside(head):
+        print("Game Over")
+        square(head[0],head[1],10,"Red")
+        return
+    if head==food:
+        food[0]=randrange(-15,15)*10
+        food[1]=randrange(-15,15)*10
+    else:
+        snake.pop(0)  # 蛇的尾部，去除一个方块
+    snake.append(head)  # 蛇的头部添加这个新的方块
+    turtle.clear()  # 清除方块
+    square(food[0],food[1],10,"green")
+    # 重新画一遍蛇的整个身子
+    for body in snake:
+        square(body[0], body[1], 10, 'black')
+    turtle.update()  # 更新动画
+    turtle.ontimer(snake_move, 100)
+
+def inside(head):
+    return -250<head[0]<250 and -250<head[1]<250
+
+turtle.setup(500,500)
+turtle.tracer(False)
+turtle.hideturtle()
+turtle.listen()
+turtle.onkey(lambda: change_direction(0, 10), "Up")
+turtle.onkey(lambda: change_direction(0, -10), "Down")
+turtle.onkey(lambda: change_direction(10, 0), "Right")
+turtle.onkey(lambda: change_direction(-10, 0), "Left")
+snake_move()
+turtle.done()
